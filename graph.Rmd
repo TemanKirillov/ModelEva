@@ -1,0 +1,32 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+load('data/test_1000.RData')
+```
+
+```{r}
+mother_tree = subset(gen_all, id_first == 89)
+```
+
+```{r}
+mother.stat <- mother_tree %>% group_by(id_gen) %>% summarise(num=length(id_pers))
+```
+
+```{r}
+p <- qplot(data=mother.stat, x = id_gen, y = num, geom = c("path"))
+p
+```
+
+
+
+## 

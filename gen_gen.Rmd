@@ -1,0 +1,55 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Генерирую первое поколение 
+```{r}
+gen_1 <- data.frame(id_gen=1, id_pers = 1:100, id_parent=NA, id_first=NA)
+gen_all <- gen_1
+```
+
+## Генерирую второе поколение
+```{r}
+gen_2 <- data.frame(id_gen=2, id_pers = 1:100, id_parent=sample(gen_1$id_pers, 100, replace = TRUE))
+gen_2$id_first <- gen_2$id_parent
+gen_last <- gen_2 #последнее сгенерированное поколение
+gen_all = rbind(gen_all, gen_2)
+```
+
+### Функция создания поколения на основе предыдущего
+```{r}
+gen_generation <- function(param.id_gen, param.population, param.parent_gen) {
+  gen.local <- data.frame(
+    id_gen=param.id_gen
+    , id_pers = 1:param.population
+    , id_parent=sample(param.parent_gen$id_pers, param.population, replace = TRUE)
+    )
+  gen.local <- merge(gen.local
+               , subset(param.parent_gen, select = c(id_pers, id_first))
+               , by.x = 'id_parent', by.y = 'id_pers')
+  gen.local <- subset(gen.local, select = c(id_gen, id_pers, id_parent, id_first))
+  gen.local <- gen.local[order(gen.local$id_pers), ]
+  return(gen.local)
+}
+```
+
+# 1000 поколений = 70 секунд, в файле RData 380 Кбайт
+```{r}
+for (param.id_gen in 3:1000) {
+  gen.local <- gen_generation(param.id_gen, 100, gen_last)
+  gen_last <- gen.local
+  gen_all = rbind(gen_all, gen.local)
+}
+```
+
+```{r}
+save(gen_all, file='data/test_1000.RData')
+```
+
+
+## График, на кот. показано, что сколько особей первого поколения не имеют потомков в этом поколении
