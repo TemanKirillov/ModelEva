@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
 ```
 
 ## Генерирую первое поколение 
@@ -38,18 +39,17 @@ gen_generation <- function(param.id_gen, param.population, param.parent_gen) {
 }
 ```
 
-# 1000 поколений = 70 секунд, в файле RData 380 Кбайт
+# 1000 поколений = 6 секунд, в файле RData 143 Кбайт
 ```{r}
 for (param.id_gen in 3:1000) {
   gen.local <- gen_generation(param.id_gen, 100, gen_last)
   gen_last <- gen.local
-  gen_all = rbind(gen_all, gen.local)
+  gen_all = rbindlist(list(gen_all, gen.local))
 }
 ```
 
+# Сохраняю файл с поколениями
 ```{r}
 save(gen_all, file='data/test_1000.RData')
 ```
 
-
-## График, на кот. показано, что сколько особей первого поколения не имеют потомков в этом поколении

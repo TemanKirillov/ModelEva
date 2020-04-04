@@ -13,4 +13,4 @@ RnwWeave: knitr
 LaTeX: pdfLaTeX
 
 StripTrailingWhitespace: Yes
-LineEndingConversion: Posix
+LineEndingConversion: Windows
